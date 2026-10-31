@@ -1,0 +1,70 @@
+import { Sidebar } from "components/sidebar.slint";
+import { GameCard, GameData } from "components/game_card.slint";
+import { GameListItem } from "components/game_list_item.slint";
+import { GameDetails } from "components/game_details.slint";
+import { GameFormDialog } from "dialogs/game_form.slint";
+import { ConfirmationDialog } from "dialogs/confirmation.slint";
+import { SettingsDialog } from "dialogs/settings.slint";
+
+export { GameData }
+
+export component AppWindow inherits Window {
+    title: "Indie Library — YeohGames";
+    min-width: 1024px;
+    min-height: 700px;
+    default-font-family: "Segoe UI, system-ui, sans-serif";
+    background: #121217;
+
+    in property <[GameData]> games: [];
+    in property <[image]> cover_images: [];
+    in property <[string]> platforms: [];
+    in property <[string]> categories: [];
+    in property <int> total_games: 0;
+    in property <int> warning_count: 0;
+    in property <[string]> warning_messages: [];
+
+    in-out property <string> search_query: "";
+    in-out property <string> selected_platform: "all";
+    in-out property <string> selected_category: "all";
+    in-out property <string> view_mode: "grid";
+    in-out property <string> sort_by: "title";
+
+    in-out property <bool> show_details: false;
+    in-out property <GameData> selected_game;
+    in-out property <image> selected_cover_image;
+
+    in-out property <bool> show_game_form: false;
+    in-out property <bool> form_is_edit: false;
+    in-out property <string> form_error: "";
+    in-out property <string> form_title: "";
+    in-out property <string> form_platform: "";
+    in-out property <string> form_developer: "";
+    in-out property <string> form_year: "";
+    in-out property <string> form_description: "";
+    in-out property <string> form_categories: "";
+    in-out property <string> form_executable: "";
+    in-out property <string> form_cover: "";
+
+    in-out property <bool> show_delete_confirm: false;
+    in-out property <string> delete_target_title: "";
+
+    in-out property <bool> show_settings: false;
+    in-out property <string> settings_library_path: "";
+
+    callback search_changed(string);
+    callback platform_filtered(string);
+    callback category_filtered(string);
+    callback view_mode_toggled(string);
+    callback sort_changed(string);
+    callback refresh_library();
+    callback open_add_game();
+    callback open_edit_game();
+    callback request_delete_game();
+    callback confirm_delete_game();
+    callback play_game(int);
+    callback browse_executable_clicked();
+    callback browse_cover_clicked();
+    callback save_game_form();
+    callback browse_library_path();
+    callback save_settings();
+}
