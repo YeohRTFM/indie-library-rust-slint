@@ -12,7 +12,7 @@ export struct GameData {
     original_index: int,
 }
 
-export component GameCard {
+export component GameCard inherits Rectangle {
     in property <GameData> game;
     in property <image> cover_image;
 
