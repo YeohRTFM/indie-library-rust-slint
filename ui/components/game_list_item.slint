@@ -7,5 +7,99 @@ export component GameListItem inherits Rectangle {
     callback clicked();
     callback play_clicked();
 
-    height: 58px;
+    height: 56px;
+    background: list_touch.has-hover ? #222233 : #181824;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: #262638;
+
+    list_touch := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        spacing: 12px;
+        alignment: center;
+
+        // Vignette jaquette
+        Rectangle {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            clip: true;
+            background: #12121a;
+
+            if game.has_cover: Image {
+                source: root.cover_image;
+                width: 100%;
+                height: 100%;
+                image-fit: cover;
+            }
+            if !game.has_cover: Text {
+                text: "🎮";
+                font-size: 18px;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        // Titre et détails
+        VerticalLayout {
+            alignment: center;
+            spacing: 2px;
+            horizontal-stretch: 1;
+
+            Text {
+                text: root.game.title;
+                font-size: 14px;
+                font-weight: 700;
+                color: #ffffff;
+                overflow: elide;
+            }
+            HorizontalLayout {
+                spacing: 8px;
+                Text {
+                    text: root.game.platform;
+                    font-size: 11px;
+                    font-weight: 700;
+                    color: #a78bfa;
+                }
+                if root.game.developer != "": Text {
+                    text: "• " + root.game.developer;
+                    font-size: 11px;
+                    color: #94a3b8;
+                }
+                if root.game.release_year != "": Text {
+                    text: "• " + root.game.release_year;
+                    font-size: 11px;
+                    color: #64748b;
+                }
+            }
+        }
+
+        // Bouton Jouer
+        Rectangle {
+            width: 80px;
+            height: 32px;
+            border-radius: 4px;
+            background: play_touch.has-hover ? #6d28d9 : #7c3aed;
+
+            Text {
+                text: "▶ Jouer";
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 700;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            play_touch := TouchArea {
+                clicked => { root.play_clicked(); }
+                mouse-cursor: pointer;
+            }
+        }
+    }
 }
