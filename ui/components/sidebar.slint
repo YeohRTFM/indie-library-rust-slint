@@ -1,0 +1,16 @@
+export component Sidebar {
+    in property <[string]> platforms: [];
+    in property <[string]> categories: [];
+    in property <string> selected_platform: "all";
+    in property <string> selected_category: "all";
+    in property <int> total_games: 0;
+    in property <int> warning_count: 0;
+
+    callback platform_selected(string);
+    callback category_selected(string);
+    callback open_settings();
+    callback open_warnings();
+
+    width: 250px;
+    background: #161620;
+}

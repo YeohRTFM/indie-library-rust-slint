@@ -1,0 +1,11 @@
+import { GameData } from "game_card.slint";
+
+export component GameListItem {
+    in property <GameData> game;
+    in property <image> cover_image;
+
+    callback clicked();
+    callback play_clicked();
+
+    height: 58px;
+}

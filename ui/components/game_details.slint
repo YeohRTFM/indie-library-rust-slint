@@ -1,0 +1,14 @@
+import { GameData } from "game_card.slint";
+
+export component GameDetails {
+    in property <GameData> game;
+    in property <image> cover_image;
+
+    callback close();
+    callback play();
+    callback edit();
+    callback delete_game();
+
+    width: 380px;
+    background: #181824;
+}
