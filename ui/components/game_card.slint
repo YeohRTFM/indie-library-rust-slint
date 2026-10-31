@@ -1,0 +1,24 @@
+export struct GameData {
+    id: string,
+    title: string,
+    platform: string,
+    developer: string,
+    release_year: string,
+    categories: string,
+    has_cover: bool,
+    cover_path: string,
+    executable_path: string,
+    description: string,
+    original_index: int,
+}
+
+export component GameCard {
+    in property <GameData> game;
+    in property <image> cover_image;
+
+    callback clicked();
+    callback play_clicked();
+
+    width: 200px;
+    height: 290px;
+}
