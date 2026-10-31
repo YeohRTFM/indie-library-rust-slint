@@ -5,4 +5,85 @@ export component ConfirmationDialog inherits Rectangle {
 
     callback confirmed();
     callback cancelled();
+
+    background: #000000bb;
+
+    Rectangle {
+        width: 440px;
+        height: 220px;
+        background: #181826;
+        border-radius: 10px;
+        border-width: 1px;
+        border-color: #401d24;
+
+        VerticalLayout {
+            padding: 20px;
+            spacing: 14px;
+            alignment: space-between;
+
+            VerticalLayout {
+                spacing: 8px;
+                Text {
+                    text: "🗑 " + root.title;
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: #f87171;
+                }
+                Text {
+                    text: root.message;
+                    font-size: 12px;
+                    color: #cbd5e1;
+                    wrap: word-wrap;
+                }
+                if root.game_title != "": Text {
+                    text: "Jeu : " + root.game_title;
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #ffffff;
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 12px;
+                alignment: end;
+
+                Rectangle {
+                    width: 100px;
+                    height: 36px;
+                    border-radius: 6px;
+                    background: cancel_touch.has-hover ? #2e2e42 : #222234;
+                    Text {
+                        text: "Annuler";
+                        font-size: 12px;
+                        color: #cbd5e1;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    cancel_touch := TouchArea {
+                        clicked => { root.cancelled(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+
+                Rectangle {
+                    width: 150px;
+                    height: 36px;
+                    border-radius: 6px;
+                    background: confirm_touch.has-hover ? #991b1b : #dc2626;
+                    Text {
+                        text: "Mettre à la corbeille";
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    confirm_touch := TouchArea {
+                        clicked => { root.confirmed(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
 }
