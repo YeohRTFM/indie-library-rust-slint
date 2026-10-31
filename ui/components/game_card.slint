@@ -21,4 +21,134 @@ export component GameCard inherits Rectangle {
 
     width: 200px;
     height: 290px;
+    background: #181824;
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: card_touch.has-hover ? #7c3aed : #262638;
+    clip: true;
+
+    card_touch := TouchArea {
+        clicked => { root.clicked(); }
+        mouse-cursor: pointer;
+    }
+
+    VerticalLayout {
+        padding: 0px;
+        spacing: 0px;
+
+        // Zone de jaquette
+        Rectangle {
+            height: 195px;
+            clip: true;
+            background: #12121a;
+
+            if game.has_cover: Image {
+                source: root.cover_image;
+                width: 100%;
+                height: 100%;
+                image-fit: cover;
+            }
+
+            if !game.has_cover: Rectangle {
+                background: #1c1c2b;
+                VerticalLayout {
+                    alignment: center;
+                    spacing: 6px;
+                    Text {
+                        text: "🎮";
+                        font-size: 32px;
+                        horizontal-alignment: center;
+                    }
+                    Text {
+                        text: root.game.platform;
+                        font-size: 11px;
+                        color: #a1a1aa;
+                        horizontal-alignment: center;
+                        font-weight: 700;
+                    }
+                }
+            }
+
+            // Badge plateforme en haut à gauche
+            Rectangle {
+                x: 8px;
+                y: 8px;
+                height: 22px;
+                background: #000000bb;
+                border-radius: 4px;
+                HorizontalLayout {
+                    padding-left: 6px;
+                    padding-right: 6px;
+                    alignment: center;
+                    Text {
+                        text: root.game.platform;
+                        font-size: 10px;
+                        font-weight: 700;
+                        color: #c4b5fd;
+                    }
+                }
+            }
+
+            // Bouton Jouer au survol
+            if card_touch.has-hover: Rectangle {
+                x: root.width - 44px;
+                y: 195px - 44px;
+                width: 36px;
+                height: 36px;
+                border-radius: 18px;
+                background: #7c3aed;
+                Text {
+                    text: "▶";
+                    color: #ffffff;
+                    font-size: 14px;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                TouchArea {
+                    mouse-cursor: pointer;
+                    clicked => { root.play_clicked(); }
+                }
+            }
+        }
+
+        // Zone de texte d'information
+        Rectangle {
+            background: #181824;
+            VerticalLayout {
+                padding: 8px;
+                spacing: 3px;
+                alignment: start;
+
+                Text {
+                    text: root.game.title;
+                    font-size: 13px;
+                    font-weight: 700;
+                    color: #ffffff;
+                    overflow: elide;
+                }
+
+                HorizontalLayout {
+                    spacing: 4px;
+                    Text {
+                        text: root.game.developer != "" ? root.game.developer : "Inconnu";
+                        font-size: 11px;
+                        color: #94a3b8;
+                        overflow: elide;
+                    }
+                    if root.game.release_year != "": Text {
+                        text: "• " + root.game.release_year;
+                        font-size: 11px;
+                        color: #64748b;
+                    }
+                }
+
+                if root.game.categories != "": Text {
+                    text: root.game.categories;
+                    font-size: 10px;
+                    color: #818cf8;
+                    overflow: elide;
+                }
+            }
+        }
+    }
 }
