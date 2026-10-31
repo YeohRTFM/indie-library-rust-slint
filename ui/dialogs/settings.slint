@@ -8,4 +8,126 @@ export component SettingsDialog inherits Rectangle {
     callback view_mode_changed(string);
     callback save_and_close();
     callback cancel();
+
+    background: #000000bb;
+
+    Rectangle {
+        width: 500px;
+        height: 280px;
+        background: #181826;
+        border-radius: 10px;
+        border-width: 1px;
+        border-color: #2f2f45;
+
+        VerticalLayout {
+            padding: 20px;
+            spacing: 16px;
+            alignment: space-between;
+
+            VerticalLayout {
+                spacing: 10px;
+                Text {
+                    text: "⚙️ Paramètres de la bibliothèque";
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: #ffffff;
+                }
+
+                Text {
+                    text: "Dossier racine des jeux :";
+                    font-size: 12px;
+                    color: #94a3b8;
+                }
+
+                Rectangle {
+                    height: 40px;
+                    border-radius: 6px;
+                    background: #12121c;
+                    border-width: 1px;
+                    border-color: #2b2b3f;
+
+                    HorizontalLayout {
+                        padding-left: 12px;
+                        padding-right: 12px;
+                        alignment: space-between;
+
+                        Text {
+                            text: root.library_path != "" ? root.library_path : "racine_bibliotheque (dossier local par défaut)";
+                            font-size: 12px;
+                            color: #cbd5e1;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+
+                        Rectangle {
+                            width: 80px;
+                            height: 28px;
+                            border-radius: 4px;
+                            background: browse_touch.has-hover ? #373752 : #27273a;
+                            Text {
+                                text: "Parcourir...";
+                                font-size: 11px;
+                                color: #ffffff;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                            browse_touch := TouchArea {
+                                clicked => { root.browse_library_path(); }
+                                mouse-cursor: pointer;
+                            }
+                        }
+                    }
+                }
+
+                Text {
+                    text: "Les dossiers de plateformes (rpgm, renpy, godot, unity, html...) sont automatiquement scannés dans ce répertoire.";
+                    font-size: 11px;
+                    color: #64748b;
+                    wrap: word-wrap;
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 12px;
+                alignment: end;
+
+                Rectangle {
+                    width: 100px;
+                    height: 36px;
+                    border-radius: 6px;
+                    background: cancel_touch.has-hover ? #2e2e42 : #222234;
+                    Text {
+                        text: "Annuler";
+                        font-size: 12px;
+                        color: #cbd5e1;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    cancel_touch := TouchArea {
+                        clicked => { root.cancel(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+
+                Rectangle {
+                    width: 120px;
+                    height: 36px;
+                    border-radius: 6px;
+                    background: save_touch.has-hover ? #6d28d9 : #7c3aed;
+                    Text {
+                        text: "Enregistrer";
+                        font-size: 12px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    save_touch := TouchArea {
+                        clicked => { root.save_and_close(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
 }
