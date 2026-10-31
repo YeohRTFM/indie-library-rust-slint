@@ -16,4 +16,343 @@ export component GameFormDialog inherits Rectangle {
     callback select_platform(string);
     callback save();
     callback cancel();
+
+    background: #000000bb;
+
+    Rectangle {
+        width: 580px;
+        height: 600px;
+        background: #181826;
+        border-radius: 12px;
+        border-width: 1px;
+        border-color: #31314d;
+
+        VerticalLayout {
+            padding: 20px;
+            spacing: 10px;
+
+            // En-tête
+            HorizontalLayout {
+                alignment: space-between;
+                Text {
+                    text: root.is_edit ? "✏ Modifier les métadonnées" : "➕ Ajouter un jeu à la bibliothèque";
+                    font-size: 16px;
+                    font-weight: 800;
+                    color: #ffffff;
+                }
+                Rectangle {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 13px;
+                    background: #242436;
+                    Text {
+                        text: "✕";
+                        color: #94a3b8;
+                        font-size: 12px;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    TouchArea {
+                        clicked => { root.cancel(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+            }
+
+            if root.error_message != "": Rectangle {
+                height: 28px;
+                border-radius: 4px;
+                background: #451a1a;
+                HorizontalLayout {
+                    padding-left: 8px;
+                    Text {
+                        text: "⚠️ " + root.error_message;
+                        font-size: 11px;
+                        color: #fca5a5;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+
+            // Formulaire déroulant
+            Flickable {
+                vertical-stretch: 1;
+                viewport-height: 480px;
+
+                VerticalLayout {
+                    spacing: 10px;
+
+                    // Titre
+                    VerticalLayout {
+                        spacing: 3px;
+                        Text { text: "Titre du jeu *"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                        Rectangle {
+                            height: 34px;
+                            border-radius: 6px;
+                            background: #12121c;
+                            border-width: 1px;
+                            border-color: #2f2f45;
+                            HorizontalLayout {
+                                padding-left: 10px;
+                                padding-right: 10px;
+                                TextInput {
+                                    text <=> root.title_input;
+                                    font-size: 13px;
+                                    color: #ffffff;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+
+                    // Plateforme & Année
+                    HorizontalLayout {
+                        spacing: 12px;
+                        VerticalLayout {
+                            horizontal-stretch: 2;
+                            spacing: 3px;
+                            Text { text: "Plateforme * (ex: rpgm, renpy, godot, unity, html)"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                            Rectangle {
+                                height: 34px;
+                                border-radius: 6px;
+                                background: #12121c;
+                                border-width: 1px;
+                                border-color: #2f2f45;
+                                HorizontalLayout {
+                                    padding-left: 10px;
+                                    padding-right: 10px;
+                                    TextInput {
+                                        text <=> root.platform_input;
+                                        font-size: 13px;
+                                        color: #ffffff;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: 3px;
+                            Text { text: "Année (ex: 2026)"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                            Rectangle {
+                                height: 34px;
+                                border-radius: 6px;
+                                background: #12121c;
+                                border-width: 1px;
+                                border-color: #2f2f45;
+                                HorizontalLayout {
+                                    padding-left: 10px;
+                                    padding-right: 10px;
+                                    TextInput {
+                                        text <=> root.year_input;
+                                        font-size: 13px;
+                                        color: #ffffff;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Développeur & Catégories
+                    HorizontalLayout {
+                        spacing: 12px;
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: 3px;
+                            Text { text: "Développeur / Studio"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                            Rectangle {
+                                height: 34px;
+                                border-radius: 6px;
+                                background: #12121c;
+                                border-width: 1px;
+                                border-color: #2f2f45;
+                                HorizontalLayout {
+                                    padding-left: 10px;
+                                    padding-right: 10px;
+                                    TextInput {
+                                        text <=> root.developer_input;
+                                        font-size: 13px;
+                                        color: #ffffff;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            spacing: 3px;
+                            Text { text: "Catégories (séparées par des virgules)"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                            Rectangle {
+                                height: 34px;
+                                border-radius: 6px;
+                                background: #12121c;
+                                border-width: 1px;
+                                border-color: #2f2f45;
+                                HorizontalLayout {
+                                    padding-left: 10px;
+                                    padding-right: 10px;
+                                    TextInput {
+                                        text <=> root.categories_input;
+                                        font-size: 13px;
+                                        color: #ffffff;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Fichier exécutable
+                    VerticalLayout {
+                        spacing: 3px;
+                        Text { text: "Fichier exécutable * (.exe, .bat, .html, etc.)"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                        Rectangle {
+                            height: 34px;
+                            border-radius: 6px;
+                            background: #12121c;
+                            border-width: 1px;
+                            border-color: #2f2f45;
+                            HorizontalLayout {
+                                padding-left: 10px;
+                                padding-right: 6px;
+                                spacing: 8px;
+                                TextInput {
+                                    text <=> root.executable_input;
+                                    font-size: 12px;
+                                    color: #ffffff;
+                                    vertical-alignment: center;
+                                    horizontal-stretch: 1;
+                                }
+                                Rectangle {
+                                    width: 80px;
+                                    height: 26px;
+                                    border-radius: 4px;
+                                    background: #27273a;
+                                    Text {
+                                        text: "Parcourir...";
+                                        font-size: 11px;
+                                        color: #e2e8f0;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                    }
+                                    TouchArea {
+                                        clicked => { root.browse_executable(); }
+                                        mouse-cursor: pointer;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Jaquette locale
+                    VerticalLayout {
+                        spacing: 3px;
+                        Text { text: "Jaquette locale (optionnel, sera copiée en cover.png)"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                        Rectangle {
+                            height: 34px;
+                            border-radius: 6px;
+                            background: #12121c;
+                            border-width: 1px;
+                            border-color: #2f2f45;
+                            HorizontalLayout {
+                                padding-left: 10px;
+                                padding-right: 6px;
+                                spacing: 8px;
+                                TextInput {
+                                    text <=> root.cover_input;
+                                    font-size: 12px;
+                                    color: #ffffff;
+                                    vertical-alignment: center;
+                                    horizontal-stretch: 1;
+                                }
+                                Rectangle {
+                                    width: 80px;
+                                    height: 26px;
+                                    border-radius: 4px;
+                                    background: #27273a;
+                                    Text {
+                                        text: "Parcourir...";
+                                        font-size: 11px;
+                                        color: #e2e8f0;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                    }
+                                    TouchArea {
+                                        clicked => { root.browse_cover(); }
+                                        mouse-cursor: pointer;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Description
+                    VerticalLayout {
+                        spacing: 3px;
+                        Text { text: "Description du jeu"; font-size: 11px; color: #a1a1aa; font-weight: 600; }
+                        Rectangle {
+                            height: 54px;
+                            border-radius: 6px;
+                            background: #12121c;
+                            border-width: 1px;
+                            border-color: #2f2f45;
+                            HorizontalLayout {
+                                padding: 8px;
+                                TextInput {
+                                    text <=> root.description_input;
+                                    font-size: 12px;
+                                    color: #ffffff;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Boutons d'action
+            HorizontalLayout {
+                spacing: 12px;
+                alignment: end;
+
+                Rectangle {
+                    width: 100px;
+                    height: 38px;
+                    border-radius: 6px;
+                    background: #242436;
+                    Text {
+                        text: "Annuler";
+                        font-size: 12px;
+                        color: #cbd5e1;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    TouchArea {
+                        clicked => { root.cancel(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+
+                Rectangle {
+                    width: 130px;
+                    height: 38px;
+                    border-radius: 6px;
+                    background: form_save_btn.has-hover ? #6d28d9 : #7c3aed;
+                    Text {
+                        text: "Enregistrer";
+                        font-size: 13px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+                    form_save_btn := TouchArea {
+                        clicked => { root.save(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
 }
