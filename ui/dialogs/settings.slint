@@ -1,0 +1,11 @@
+export component SettingsDialog {
+    in property <string> library_path: "";
+    in property <string> view_mode: "grid";
+    in property <int> cover_size: 190;
+    in property <bool> dark_theme: true;
+
+    callback browse_library_path();
+    callback view_mode_changed(string);
+    callback save_and_close();
+    callback cancel();
+}

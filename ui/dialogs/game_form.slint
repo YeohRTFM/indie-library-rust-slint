@@ -1,0 +1,19 @@
+export component GameFormDialog {
+    in property <bool> is_edit: false;
+    in property <[string]> existing_platforms: [];
+    in-out property <string> title_input: "";
+    in-out property <string> platform_input: "";
+    in-out property <string> developer_input: "";
+    in-out property <string> year_input: "";
+    in-out property <string> description_input: "";
+    in-out property <string> categories_input: "";
+    in-out property <string> executable_input: "";
+    in-out property <string> cover_input: "";
+    in property <string> error_message: "";
+
+    callback browse_executable();
+    callback browse_cover();
+    callback select_platform(string);
+    callback save();
+    callback cancel();
+}
