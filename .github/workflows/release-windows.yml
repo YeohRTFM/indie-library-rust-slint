@@ -1,0 +1,18 @@
+name: Build Windows Executable (.exe)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release --verbose
+      - uses: actions/upload-artifact@v4
+        with:
+          name: indie-library-windows-x64
+          path: target/release/indie-library.exe
