@@ -8,9 +8,226 @@ export component Sidebar inherits Rectangle {
 
     callback platform_selected(string);
     callback category_selected(string);
+    callback open_add_game();
+    callback refresh_library();
     callback open_settings();
     callback open_warnings();
 
     width: 250px;
-    background: #161620;
+    background: #151520;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 14px;
+
+        // Titre et marque
+        VerticalLayout {
+            spacing: 2px;
+            Text {
+                text: "INDIE LIBRARY";
+                font-size: 18px;
+                font-weight: 900;
+                color: #a78bfa;
+                letter-spacing: 1px;
+            }
+            Text {
+                text: "YeohGames • Gestionnaire Local";
+                font-size: 10px;
+                color: #71717a;
+            }
+        }
+
+        // Boutons d'action principaux
+        VerticalLayout {
+            spacing: 8px;
+
+            // Bouton Ajouter
+            Rectangle {
+                height: 38px;
+                border-radius: 6px;
+                background: add_touch.has-hover ? #6d28d9 : #7c3aed;
+
+                Text {
+                    text: "+ Ajouter un jeu";
+                    color: #ffffff;
+                    font-size: 13px;
+                    font-weight: 700;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+
+                add_touch := TouchArea {
+                    clicked => { root.open_add_game(); }
+                    mouse-cursor: pointer;
+                }
+            }
+
+            // Bouton Actualiser
+            Rectangle {
+                height: 34px;
+                border-radius: 6px;
+                background: ref_touch.has-hover ? #26263b : #1c1c2a;
+                border-width: 1px;
+                border-color: #2e2e46;
+
+                Text {
+                    text: "🔄 Actualiser la liste";
+                    color: #cbd5e1;
+                    font-size: 12px;
+                    font-weight: 600;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+
+                ref_touch := TouchArea {
+                    clicked => { root.refresh_library(); }
+                    mouse-cursor: pointer;
+                }
+            }
+        }
+
+        // Titre de section
+        Text {
+            text: "PLATEFORMES";
+            font-size: 10px;
+            font-weight: 800;
+            color: #64748b;
+            letter-spacing: 1px;
+        }
+
+        // Liste des plateformes
+        Flickable {
+            vertical-stretch: 1;
+            viewport-height: (root.platforms.length + 1) * 36px;
+
+            VerticalLayout {
+                spacing: 4px;
+                alignment: start;
+
+                // Option Toutes les plateformes
+                Rectangle {
+                    height: 32px;
+                    border-radius: 6px;
+                    background: root.selected_platform == "all" ? #2a2046 : (all_touch.has-hover ? #1f1f2e : transparent);
+
+                    HorizontalLayout {
+                        padding-left: 10px;
+                        padding-right: 10px;
+                        alignment: space-between;
+
+                        Text {
+                            text: "Toutes les plateformes";
+                            font-size: 12px;
+                            color: root.selected_platform == "all" ? #c4b5fd : #a1a1aa;
+                            font-weight: root.selected_platform == "all" ? 700 : 500;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    all_touch := TouchArea {
+                        clicked => { root.platform_selected("all"); }
+                        mouse-cursor: pointer;
+                    }
+                }
+
+                // Plateformes dynamiques
+                for p in root.platforms: Rectangle {
+                    height: 32px;
+                    border-radius: 6px;
+                    background: root.selected_platform == p ? #2a2046 : (plat_touch.has-hover ? #1f1f2e : transparent);
+
+                    HorizontalLayout {
+                        padding-left: 10px;
+                        padding-right: 10px;
+                        alignment: space-between;
+
+                        Text {
+                            text: p;
+                            font-size: 12px;
+                            color: root.selected_platform == p ? #c4b5fd : #a1a1aa;
+                            font-weight: root.selected_platform == p ? 700 : 500;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    plat_touch := TouchArea {
+                        clicked => { root.platform_selected(p); }
+                        mouse-cursor: pointer;
+                    }
+                }
+            }
+        }
+
+        // Pied de page
+        VerticalLayout {
+            spacing: 8px;
+
+            Rectangle {
+                height: 1px;
+                background: #232334;
+            }
+
+            HorizontalLayout {
+                alignment: space-between;
+                Text {
+                    text: root.total_games + (root.total_games > 1 ? " jeux installés" : " jeu installé");
+                    font-size: 11px;
+                    color: #71717a;
+                    vertical-alignment: center;
+                }
+
+                if root.warning_count > 0: Rectangle {
+                    height: 20px;
+                    border-radius: 4px;
+                    background: #451a03;
+                    HorizontalLayout {
+                        padding-left: 6px;
+                        padding-right: 6px;
+                        alignment: center;
+                        Text {
+                            text: "⚠️ " + root.warning_count;
+                            font-size: 10px;
+                            color: #f59e0b;
+                            font-weight: 700;
+                        }
+                    }
+                    TouchArea {
+                        clicked => { root.open_warnings(); }
+                        mouse-cursor: pointer;
+                    }
+                }
+            }
+
+            // Bouton Paramètres
+            Rectangle {
+                height: 32px;
+                border-radius: 6px;
+                background: sett_touch.has-hover ? #242436 : transparent;
+
+                HorizontalLayout {
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    spacing: 8px;
+                    alignment: start;
+
+                    Text {
+                        text: "⚙️";
+                        font-size: 12px;
+                        vertical-alignment: center;
+                    }
+                    Text {
+                        text: "Paramètres";
+                        font-size: 12px;
+                        color: #94a3b8;
+                        vertical-alignment: center;
+                    }
+                }
+
+                sett_touch := TouchArea {
+                    clicked => { root.open_settings(); }
+                    mouse-cursor: pointer;
+                }
+            }
+        }
+    }
 }
