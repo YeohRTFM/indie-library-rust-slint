@@ -22,6 +22,8 @@ jobs:
 
       - name: Build release binary
         run: cargo build --release --verbose
+        env:
+          RUSTFLAGS: "-C target-feature=+crt-static"
 
       - name: Verify executable generated
         shell: pwsh
