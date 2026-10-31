@@ -1,0 +1,8 @@
+export component ConfirmationDialog {
+    in property <string> title: "Confirmer la suppression";
+    in property <string> message: "Êtes-vous sûr de vouloir déplacer ce jeu dans la corbeille système ?";
+    in property <string> game_title: "";
+
+    callback confirmed();
+    callback cancelled();
+}
