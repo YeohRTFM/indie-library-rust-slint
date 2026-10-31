@@ -1,6 +1,6 @@
 import { GameData } from "game_card.slint";
 
-export component GameListItem {
+export component GameListItem inherits Rectangle {
     in property <GameData> game;
     in property <image> cover_image;
 
