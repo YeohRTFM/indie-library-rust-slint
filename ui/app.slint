@@ -13,7 +13,7 @@ export component AppWindow inherits Window {
     min-width: 1024px;
     min-height: 700px;
     default-font-family: "Segoe UI, system-ui, sans-serif";
-    background: #121217;
+    background: #101016;
 
     in property <[GameData]> games: [];
     in property <[image]> cover_images: [];
@@ -67,4 +67,440 @@ export component AppWindow inherits Window {
     callback save_game_form();
     callback browse_library_path();
     callback save_settings();
+
+    // Contenu principal de l'application
+    HorizontalLayout {
+        padding: 0px;
+        spacing: 0px;
+
+        // 1. Barre latérale gauche (Filtres, Actions, Stats)
+        Sidebar {
+            platforms: root.platforms;
+            categories: root.categories;
+            selected_platform: root.selected_platform;
+            selected_category: root.selected_category;
+            total_games: root.total_games;
+            warning_count: root.warning_count;
+
+            platform_selected(p) => {
+                root.selected_platform = p;
+                root.platform_filtered(p);
+            }
+            category_selected(c) => {
+                root.selected_category = c;
+                root.category_filtered(c);
+            }
+            open_add_game => {
+                root.open_add_game();
+            }
+            refresh_library => {
+                root.refresh_library();
+            }
+            open_settings => {
+                root.show_settings = true;
+            }
+            open_warnings => {
+            }
+        }
+
+        // 2. Colonne centrale (Barre d'outils + Grille/Liste de jeux)
+        VerticalLayout {
+            horizontal-stretch: 1;
+            padding: 0px;
+            spacing: 0px;
+
+            // Barre d'outils supérieure
+            Rectangle {
+                height: 64px;
+                background: #14141e;
+                border-width: 1px;
+                border-color: #212130;
+
+                HorizontalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    spacing: 16px;
+                    alignment: center;
+
+                    // Champ de recherche
+                    Rectangle {
+                        horizontal-stretch: 1;
+                        height: 38px;
+                        border-radius: 6px;
+                        background: #0d0d14;
+                        border-width: 1px;
+                        border-color: #262638;
+
+                        HorizontalLayout {
+                            padding-left: 12px;
+                            padding-right: 12px;
+                            spacing: 8px;
+                            alignment: center;
+
+                            Text {
+                                text: "🔍";
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+
+                            search_input := TextInput {
+                                text <=> root.search_query;
+                                font-size: 13px;
+                                color: #ffffff;
+                                vertical-alignment: center;
+                                horizontal-stretch: 1;
+                                edited => {
+                                    root.search_changed(self.text);
+                                }
+                            }
+                        }
+                    }
+
+                    // Bascule Grille / Liste
+                    Rectangle {
+                        width: 76px;
+                        height: 36px;
+                        border-radius: 6px;
+                        background: #1a1a27;
+                        border-width: 1px;
+                        border-color: #2b2b3f;
+
+                        HorizontalLayout {
+                            padding: 2px;
+                            spacing: 2px;
+
+                            Rectangle {
+                                horizontal-stretch: 1;
+                                border-radius: 4px;
+                                background: root.view_mode == "grid" ? #7c3aed : transparent;
+                                Text {
+                                    text: "▦";
+                                    font-size: 14px;
+                                    color: root.view_mode == "grid" ? #ffffff : #94a3b8;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                                TouchArea {
+                                    clicked => {
+                                        root.view_mode = "grid";
+                                        root.view_mode_toggled("grid");
+                                    }
+                                    mouse-cursor: pointer;
+                                }
+                            }
+
+                            Rectangle {
+                                horizontal-stretch: 1;
+                                border-radius: 4px;
+                                background: root.view_mode == "list" ? #7c3aed : transparent;
+                                Text {
+                                    text: "☷";
+                                    font-size: 14px;
+                                    color: root.view_mode == "list" ? #ffffff : #94a3b8;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                                TouchArea {
+                                    clicked => {
+                                        root.view_mode = "list";
+                                        root.view_mode_toggled("list");
+                                    }
+                                    mouse-cursor: pointer;
+                                }
+                            }
+                        }
+                    }
+
+                    // Bouton de tri
+                    Rectangle {
+                        height: 36px;
+                        border-radius: 6px;
+                        background: sort_touch.has-hover ? #28283d : #1d1d2c;
+                        border-width: 1px;
+                        border-color: #2c2c42;
+
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 10px;
+                            spacing: 6px;
+                            alignment: center;
+
+                            Text {
+                                text: "Trier : " + (root.sort_by == "title" ? "Nom (A-Z)" : (root.sort_by == "year" ? "Année" : "Plateforme"));
+                                font-size: 12px;
+                                color: #cbd5e1;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        sort_touch := TouchArea {
+                            clicked => {
+                                if (root.sort_by == "title") {
+                                    root.sort_by = "year";
+                                    root.sort_changed("year");
+                                } else if (root.sort_by == "year") {
+                                    root.sort_by = "platform";
+                                    root.sort_changed("platform");
+                                } else {
+                                    root.sort_by = "title";
+                                    root.sort_changed("title");
+                                }
+                            }
+                            mouse-cursor: pointer;
+                        }
+                    }
+
+                    // Bouton Actualiser rapide
+                    Rectangle {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 6px;
+                        background: top_ref_touch.has-hover ? #28283d : #1d1d2c;
+                        border-width: 1px;
+                        border-color: #2c2c42;
+
+                        Text {
+                            text: "🔄";
+                            font-size: 13px;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+
+                        top_ref_touch := TouchArea {
+                            clicked => { root.refresh_library(); }
+                            mouse-cursor: pointer;
+                        }
+                    }
+                }
+            }
+
+            // Zone d'affichage des jeux
+            Rectangle {
+                vertical-stretch: 1;
+                background: #101016;
+
+                // État vide lorsque aucun jeu n'est détecté
+                if root.games.length == 0: Rectangle {
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: 16px;
+
+                        Text {
+                            text: "🎮";
+                            font-size: 54px;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: "Votre bibliothèque est vide";
+                            font-size: 20px;
+                            font-weight: 800;
+                            color: #ffffff;
+                            horizontal-alignment: center;
+                        }
+
+                        Text {
+                            text: "Le dossier 'racine_bibliotheque' a été créé à côté de l'application.";
+                            font-size: 13px;
+                            color: #94a3b8;
+                            horizontal-alignment: center;
+                        }
+
+                        Rectangle {
+                            width: 520px;
+                            background: #161622;
+                            border-radius: 8px;
+                            border-width: 1px;
+                            border-color: #26263b;
+                            VerticalLayout {
+                                padding: 16px;
+                                spacing: 8px;
+                                Text {
+                                    text: "Pour ajouter vos jeux dans Indie Library :";
+                                    font-size: 12px;
+                                    font-weight: 700;
+                                    color: #c4b5fd;
+                                }
+                                Text {
+                                    text: "1. Créez un sous-dossier de plateforme (ex: rpgm, renpy, godot, unity, html)";
+                                    font-size: 12px;
+                                    color: #cbd5e1;
+                                }
+                                Text {
+                                    text: "2. Placez-y le dossier de votre jeu avec son fichier .json et son cover.png";
+                                    font-size: 12px;
+                                    color: #cbd5e1;
+                                }
+                                Text {
+                                    text: "3. OU cliquez directement ci-dessous pour ajouter un jeu via l'interface :";
+                                    font-size: 12px;
+                                    color: #a1a1aa;
+                                }
+                            }
+                        }
+
+                        HorizontalLayout {
+                            spacing: 12px;
+                            alignment: center;
+
+                            Rectangle {
+                                width: 170px;
+                                height: 40px;
+                                border-radius: 6px;
+                                background: empty_add_touch.has-hover ? #6d28d9 : #7c3aed;
+                                Text {
+                                    text: "➕ Ajouter un jeu";
+                                    color: #ffffff;
+                                    font-size: 13px;
+                                    font-weight: 700;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                                empty_add_touch := TouchArea {
+                                    clicked => { root.open_add_game(); }
+                                    mouse-cursor: pointer;
+                                }
+                            }
+
+                            Rectangle {
+                                width: 170px;
+                                height: 40px;
+                                border-radius: 6px;
+                                background: empty_ref_touch.has-hover ? #2b2b3f : #1d1d2a;
+                                border-width: 1px;
+                                border-color: #35354d;
+                                Text {
+                                    text: "🔄 Actualiser";
+                                    color: #e2e8f0;
+                                    font-size: 13px;
+                                    font-weight: 600;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                                empty_ref_touch := TouchArea {
+                                    clicked => { root.refresh_library(); }
+                                    mouse-cursor: pointer;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Mode Grille
+                if root.games.length > 0 && root.view_mode == "grid": Flickable {
+                    viewport-height: (root.games.length / 4 + 1) * 315px + 40px;
+
+                    for g[i] in root.games: GameCard {
+                        x: 20px + (i - (i / 4) * 4) * 220px;
+                        y: 20px + (i / 4) * 310px;
+                        game: g;
+                        cover_image: root.cover_images[i];
+
+                        clicked => {
+                            root.selected_game = g;
+                            root.selected_cover_image = root.cover_images[i];
+                            root.show_details = true;
+                        }
+                        play_clicked => {
+                            root.play_game(g.original_index);
+                        }
+                    }
+                }
+
+                // Mode Liste
+                if root.games.length > 0 && root.view_mode == "list": Flickable {
+                    viewport-height: root.games.length * 64px + 30px;
+
+                    VerticalLayout {
+                        padding: 16px;
+                        spacing: 8px;
+
+                        for g[i] in root.games: GameListItem {
+                            game: g;
+                            cover_image: root.cover_images[i];
+
+                            clicked => {
+                                root.selected_game = g;
+                                root.selected_cover_image = root.cover_images[i];
+                                root.show_details = true;
+                            }
+                            play_clicked => {
+                                root.play_game(g.original_index);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Volet d'inspection latéral droit (Détails du jeu sélectionné)
+        if root.show_details: GameDetails {
+            game: root.selected_game;
+            cover_image: root.selected_cover_image;
+
+            close => {
+                root.show_details = false;
+            }
+            play => {
+                root.play_game(root.selected_game.original_index);
+            }
+            edit => {
+                root.open_edit_game();
+            }
+            delete_game => {
+                root.request_delete_game();
+            }
+        }
+    }
+
+    // Fenêtres modales par-dessus l'écran
+    if root.show_game_form: GameFormDialog {
+        is_edit: root.form_is_edit;
+        title_input <=> root.form_title;
+        platform_input <=> root.form_platform;
+        developer_input <=> root.form_developer;
+        year_input <=> root.form_year;
+        description_input <=> root.form_description;
+        categories_input <=> root.form_categories;
+        executable_input <=> root.form_executable;
+        cover_input <=> root.form_cover;
+        error_message: root.form_error;
+
+        browse_executable => {
+            root.browse_executable_clicked();
+        }
+        browse_cover => {
+            root.browse_cover_clicked();
+        }
+        save => {
+            root.save_game_form();
+        }
+        cancel => {
+            root.show_game_form = false;
+        }
+    }
+
+    if root.show_delete_confirm: ConfirmationDialog {
+        game_title: root.delete_target_title;
+        confirmed => {
+            root.confirm_delete_game();
+        }
+        cancelled => {
+            root.show_delete_confirm = false;
+        }
+    }
+
+    if root.show_settings: SettingsDialog {
+        library_path: root.settings_library_path;
+        view_mode: root.view_mode;
+        browse_library_path => {
+            root.browse_library_path();
+        }
+        save_and_close => {
+            root.save_settings();
+        }
+        cancel => {
+            root.show_settings = false;
+        }
+    }
 }
